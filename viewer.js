@@ -1,18 +1,28 @@
 
-export class SplatViewer {
-  constructor({ container, model, cameras }) {
-    this.container = container;
-    this.model = model;
-    this.cameras = cameras;
+import { loadPLYModel } from './utils.js';
+
+window.addEventListener('DOMContentLoaded', () => {
+  const canvas = document.createElement('canvas');
+  document.body.appendChild(canvas);
+  const gl = canvas.getContext('webgl2');
+
+  if (!gl) {
+    alert('WebGL2 no soportado en este navegador');
+    return;
   }
 
-  load() {
-    const message = document.createElement('div');
-    message.innerText = 'Cargando visor real... (aquí iría GLSplatViewer)';
-    message.style = 'color: white; background: black; font-size: 2em; padding: 2em;';
-    this.container.appendChild(message);
+  // Mostrar un mensaje mientras se carga
+  const msg = document.createElement('div');
+  msg.innerText = 'Cargando modelo Moli02.ply...';
+  msg.style = 'color: white; position: absolute; top: 20px; left: 20px;';
+  document.body.appendChild(msg);
 
-    // Aquí deberías integrar el código real de GLSplatViewer
-    // Este es solo un placeholder temporal
-  }
-}
+  loadPLYModel(gl, 'Moli02.ply').then(() => {
+    msg.remove();
+    // Aquí iría el render loop real
+    const done = document.createElement('div');
+    done.innerText = 'Modelo cargado (demo básica)';
+    done.style = 'color: white; position: absolute; top: 20px; left: 20px;';
+    document.body.appendChild(done);
+  });
+});
