@@ -1,15 +1,17 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Gaussian Splatting Viewer</title>
-    <style>
-      html, body { margin: 0; height: 100%; overflow: hidden; background-color: black; }
-      canvas { display: block; }
-    </style>
-  </head>
-  <body>
-    <script type="module" src="viewer.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <title>Gaussian Splatting Web Viewer</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background-color: black; }
+    canvas { display: block; width: 100vw; height: 100vh; }
+    #loading { position: absolute; color: white; top: 20px; left: 20px; font-family: sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="loading">Cargando modelo Gaussian Splatting...</div>
+  <script type="module" src="main.js"></script>
+</body>
 </html>

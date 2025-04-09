@@ -1,28 +1,26 @@
 
-import { loadPLYModel } from './utils.js';
+export async function initViewer({ modelPath, cameraCsvPath }) {
+  const loading = document.getElementById('loading');
+  loading.innerText = 'Cargando modelo: ' + modelPath;
 
-window.addEventListener('DOMContentLoaded', () => {
-  const canvas = document.createElement('canvas');
-  document.body.appendChild(canvas);
-  const gl = canvas.getContext('webgl2');
+  // Fetch CSV
+  const camResponse = await fetch(cameraCsvPath);
+  const camText = await camResponse.text();
+  const camLines = camText.trim().split('\n');
+  const firstCam = camLines[1].split(','); // Skip header
 
-  if (!gl) {
-    alert('WebGL2 no soportado en este navegador');
-    return;
-  }
+  const position = {
+    x: parseFloat(firstCam[1]),
+    y: parseFloat(firstCam[2]),
+    z: parseFloat(firstCam[3])
+  };
 
-  // Mostrar un mensaje mientras se carga
-  const msg = document.createElement('div');
-  msg.innerText = 'Cargando modelo Moli02.ply...';
-  msg.style = 'color: white; position: absolute; top: 20px; left: 20px;';
-  document.body.appendChild(msg);
+  console.log("Cámara inicial desde CSV:", position);
 
-  loadPLYModel(gl, 'Moli02.ply').then(() => {
-    msg.remove();
-    // Aquí iría el render loop real
-    const done = document.createElement('div');
-    done.innerText = 'Modelo cargado (demo básica)';
-    done.style = 'color: white; position: absolute; top: 20px; left: 20px;';
-    document.body.appendChild(done);
-  });
-});
+  // Fetch PLY
+  const plyResponse = await fetch(modelPath);
+  const plyText = await plyResponse.text();
+  console.log("Modelo PLY cargado (demo):", plyText.slice(0, 300));
+
+  loading.innerText = 'Modelo cargado. Cámara colocada.';
+}
