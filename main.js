@@ -1,4 +1,4 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js';
+import * as THREE from 'https://unpkg.com/three@0.155.0/build/three.module.js';
 import { PLYLoader } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/loaders/PLYLoader.js';
 import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/controls/OrbitControls.js';
 
