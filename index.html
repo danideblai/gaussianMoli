@@ -1,17 +1,52 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Gaussian Splatting Web Viewer</title>
-  <style>
-    html, body { margin: 0; height: 100%; overflow: hidden; background-color: black; }
-    canvas { display: block; width: 100vw; height: 100vh; }
-    #loading { position: absolute; color: white; top: 20px; left: 20px; font-family: sans-serif; }
-  </style>
+  <title>Gaussian Moli</title>
+  <style> body { margin: 0; overflow: hidden; } </style>
+
+  <!-- Cargar Three.js y PLYLoader desde CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/examples/js/loaders/PLYLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
-  <div id="loading">Cargando modelo Gaussian Splatting...</div>
-  <script type="module" src="main.js"></script>
+<script>
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+  const loader = new THREE.PLYLoader();
+  loader.load('Moli02.ply', function (geometry) {
+    const material = new THREE.PointsMaterial({ size: 0.02, vertexColors: true });
+    const pointCloud = new THREE.Points(geometry, material);
+    scene.add(pointCloud);
+
+    geometry.computeBoundingBox();
+    const center = geometry.boundingBox.getCenter(new THREE.Vector3());
+    const size = geometry.boundingBox.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    camera.position.set(center.x, center.y, center.z + maxDim * 2);
+    camera.lookAt(center);
+    controls.target.copy(center);
+  });
+
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', function () {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
 </body>
 </html>
