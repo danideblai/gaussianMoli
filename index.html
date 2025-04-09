@@ -1,0 +1,22 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gaussian Splatting Viewer</title>
+  <style>html,body{margin:0;height:100%;overflow:hidden}</style>
+</head>
+<body>
+  <script type="module">
+    import { GaussianSplatViewer } from './viewer.js';
+
+    const viewer = new GaussianSplatViewer({
+      container: document.body,
+      plyUrl: 'Moli01.ply',
+      cameraUrl: 'realitymoli.gsv' // Asegúrate de que esté en formato compatible
+    });
+
+    viewer.load();
+  </script>
+</body>
+</html>
