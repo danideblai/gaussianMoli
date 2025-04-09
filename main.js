@@ -15,26 +15,11 @@ document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 
 const loader = new PLYLoader();
-loader.load('models/Moli02.ply', function (geometry) {
+loader.load('https://raw.githubusercontent.com/danideblai/gaussianMoli/main/models/Moli02.ply', function (geometry) {
   geometry.computeVertexNormals();
   const material = new THREE.MeshStandardMaterial({ color: 0xcccccc });
   const mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
 });
 
-const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(1, 1, 1);
-scene.add(light);
-scene.add(new THREE.AmbientLight(0x404040));
-
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-function animate() {
-  requestAnimationFrame(animate);
-  renderer.render(scene, camera);
-}
-animate();
+const light = new
