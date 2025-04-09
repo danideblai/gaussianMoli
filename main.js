@@ -1,5 +1,5 @@
 
-import { initViewer } from './viewer-fixed.js';
+import { initViewer } from './viewer-final.js';
 
 window.addEventListener('DOMContentLoaded', async () => {
   await initViewer({
