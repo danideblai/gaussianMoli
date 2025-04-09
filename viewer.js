@@ -24,3 +24,5 @@ export async function initViewer({ modelPath, cameraCsvPath }) {
 
   loading.innerText = 'Modelo cargado. Cámara colocada.';
 }
+
+export { initViewer };
