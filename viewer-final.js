@@ -1,5 +1,5 @@
 
-export async function initViewer({ modelPath, cameraCsvPath }) {
+async function initViewer({ modelPath, cameraCsvPath }) {
   const loading = document.getElementById('loading');
   loading.innerText = 'Cargando modelo: ' + modelPath;
 
