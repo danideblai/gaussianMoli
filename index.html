@@ -2,20 +2,24 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visor PLY - Modelo 3D</title>
-  <!-- Estilos básicos para que el lienzo ocupe toda la pantalla sin márgenes -->
+  <title>Visor PLY 3D</title>
   <style>
-    body { margin: 0; }  /* Sin margen para que el canvas ocupe toda la ventana */
-    canvas { display: block; }  /* El canvas se muestra como elemento de bloque */
+    /* Hacemos que el canvas ocupe toda la pantalla, sin márgenes */
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
   </style>
-  <!-- Cargar Three.js y sus complementos desde un CDN -->
-  <script src="https://unpkg.com/three@latest/build/three.min.js"></script>
-  <script src="https://unpkg.com/three@latest/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://unpkg.com/three@latest/examples/js/loaders/PLYLoader.js"></script>
 </head>
 <body>
-  <!-- El script principal de nuestra aplicación -->
+
+  <!-- Three.js library -->
+  <script src="https://unpkg.com/three@0.150.1/build/three.min.js"></script>
+  <!-- OrbitControls for camera navigation -->
+  <script src="https://unpkg.com/three@0.150.1/examples/js/controls/OrbitControls.js"></script>
+  <!-- PLYLoader to load .ply models -->
+  <script src="https://unpkg.com/three@0.150.1/examples/js/loaders/PLYLoader.js"></script>
+
+  <!-- Main script that sets up the scene and loads the model -->
   <script src="main.js"></script>
+
 </body>
 </html>

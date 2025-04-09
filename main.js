@@ -1,91 +1,91 @@
 // Crear la escena
 const scene = new THREE.Scene();
 
-// Configurar la cámara (perspectiva) con fov 75°, proporción de aspecto de la ventana, y planos de recorte cercanos/lejanos
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-// Posicionar la cámara a cierta distancia para ver el modelo. 
-camera.position.set(0, 0, 5);  // (x=0, y=0, z=5) - se puede ajustar según el tamaño del modelo
+// Configurar la cámara (Perspectiva) 
+const camera = new THREE.PerspectiveCamera(
+  60,                                     // campo de visión (FOV) en grados
+  window.innerWidth / window.innerHeight, // relación de aspecto del canvas
+  0.1,                                    // plano cercano de recorte
+  1000                                    // plano lejano de recorte
+);
+// Posicionar la cámara un poco alejada para empezar
+camera.position.set(0, 0, 10);
 
-// Crear el renderizador y añadir el lienzo al documento
+// Crear el renderizador WebGL y añadirlo al documento
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Agregar controles de órbita para permitir rotar/hacer zoom con el mouse
+// Habilitar controles orbitales para mover la cámara con el ratón
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;  // (opcional) suaviza el movimiento de la cámara
-controls.target.set(0, 0, 0);   // Apuntar la cámara al origen (centro de la escena)
-controls.update();
+// (Opcional: controls.target por defecto es (0,0,0), se ajustará más abajo tras cargar el modelo)
 
-// Añadir iluminación básica (luz direccional y luz ambiental) para ver modelos sin color propio
-const luzDireccional = new THREE.DirectionalLight(0xffffff, 0.8);
-luzDireccional.position.set(1, 1, 1);  // posicionar la luz
-scene.add(luzDireccional);
-scene.add(new THREE.AmbientLight(0xffffff, 0.5));  // luz ambiental suave
+// Añadir una luz para iluminar el modelo (luz ambiental y direccional)
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);   // luz suave ambiental
+scene.add(ambientLight);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8); // luz direccional
+directionalLight.position.set(10, 10, 10);  // posicionarla en diagonal arriba
+scene.add(directionalLight);
 
-// Cargar el modelo PLY
+// Cargar el archivo PLY
 const loader = new THREE.PLYLoader();
 loader.load('models/Moli02.ply', function (geometry) {
-  // Callback cuando el archivo se haya cargado
-  geometry.computeVertexNormals();  // calcular normales para iluminación correcta
+  // Este callback se ejecuta cuando el archivo PLY se ha cargado
 
-  // Elegir material: si el PLY tiene colores por vértice, usarlos; si no, un color gris
-  let material;
-  if (geometry.hasAttribute('color')) {
-    material = new THREE.PointsMaterial({ vertexColors: true, size: 0.005 }); 
-    // ^ Si es nube de puntos (splat), usamos PointsMaterial. 
-    // En caso de malla (faces), usar MeshStandardMaterial:
-    // material = new THREE.MeshStandardMaterial({ vertexColors: true });
-  } else {
-    material = new THREE.MeshStandardMaterial({ color: 0xaaaaaa });
+  // Si el PLY no tiene normales, las calculamos para mejorar la iluminación
+  if (geometry.index !== null) {
+    geometry.computeVertexNormals();
   }
 
-  // Crear el objeto 3D (malla o nube de puntos) con la geometría y el material
-  let object3D;
-  if (material instanceof THREE.PointsMaterial) {
-    object3D = new THREE.Points(geometry, material);
+  // Determinar si el modelo tiene colores por vértice
+  const hasVertexColors = geometry.hasAttribute('color');
+
+  // Crear un material según el tipo de geometría
+  let object;
+  if (geometry.index === null) {
+    // Si no hay índice, asumimos que es una nube de puntos
+    const pointMaterial = new THREE.PointsMaterial({
+      size: 1.0,                           // tamaño de cada punto (en píxeles)
+      vertexColors: hasVertexColors,       // usar color de vértices si está presente
+      color: hasVertexColors ? 0xffffff : 0xcccccc  // blanco si hay colores, gris claro si no
+    });
+    object = new THREE.Points(geometry, pointMaterial);
   } else {
-    object3D = new THREE.Mesh(geometry, material);
+    // Si hay índice, es una malla con caras
+    const meshMaterial = new THREE.MeshStandardMaterial({
+      vertexColors: hasVertexColors,      // aplica colores de vértice si existen
+      color: hasVertexColors ? 0xffffff : 0xcccccc  // color base (blanco para ver colores reales)
+    });
+    object = new THREE.Mesh(geometry, meshMaterial);
   }
 
-  // Opcional: centrar el modelo en la escena
-  geometry.computeBoundingBox();
-  const center = new THREE.Vector3();
-  geometry.boundingBox.getCenter(center);
-  object3D.position.x -= center.x;
-  object3D.position.y -= center.y;
-  object3D.position.z -= center.z;
+  // Añadir el modelo a la escena
+  scene.add(object);
 
-  // Opcional: ajustar la cámara para encuadrar el modelo
-  geometry.computeBoundingSphere();
-  const radius = geometry.boundingSphere.radius;
-  camera.position.set(0, 0, radius * 2.5);      // alejar la cámara según el tamaño del modelo
-  camera.near = radius / 10;
-  camera.far = radius * 10;
-  camera.updateProjectionMatrix();
-  controls.update();
-
-  // Agregar el modelo cargado a la escena
-  scene.add(object3D);
-},
-// Función de progreso (opcional)
-(xhr) => {
-  console.log((xhr.loaded / xhr.total * 100) + '% cargado');
-},
-// Función de manejo de errores (opcional)
-(error) => {
+  // Opcional: centrar la cámara y controles respecto al modelo cargado
+  geometry.computeBoundingSphere();                  // calcular esfera envolvente del modelo
+  if (geometry.boundingSphere) {
+    const center = geometry.boundingSphere.center;
+    const radius = geometry.boundingSphere.radius;
+    // Posicionar la cámara a una distancia adecuada (2 radios) desde el centro del modelo
+    camera.position.set(center.x + radius*2, center.y + radius*2, center.z + radius*2);
+    camera.lookAt(center);
+    controls.target.copy(center);  // orbitar alrededor del centro del modelo
+    controls.update();
+  }
+}, undefined, function (error) {
   console.error('Error al cargar el modelo PLY:', error);
 });
 
-// Función de animación para renderizar la escena en cada frame
+// Función de animación (renderizado en bucle)
 function animate() {
   requestAnimationFrame(animate);
-  controls.update();             // actualizar controles (necesario si enableDamping está activado)
-  renderer.render(scene, camera); // dibujar la escena
+  controls.update();             // actualizar controles (necesario si damping/inercia)
+  renderer.render(scene, camera); 
 }
 animate();
 
-// Ajustar el renderizador y la cámara al cambiar el tamaño de la ventana
+// Ajustar el renderizador y la cámara si la ventana cambia de tamaño
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
