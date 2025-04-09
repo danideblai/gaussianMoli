@@ -1,22 +1,25 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Gaussian Splatting Viewer</title>
-  <style>html,body{margin:0;height:100%;overflow:hidden}</style>
-</head>
-<body>
-  <script type="module">
-    import { GaussianSplatViewer } from './viewer.js';
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gaussian Splatting Viewer</title>
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background-color: black; }
+      canvas { display: block; }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      import { SplatViewer } from './viewer.js';
 
-    const viewer = new GaussianSplatViewer({
-      container: document.body,
-      plyUrl: 'Moli01.ply',
-      cameraUrl: 'realitymoli.gsv' // Asegúrate de que esté en formato compatible
-    });
+      const viewer = new SplatViewer({
+        container: document.body,
+        model: 'Moli02.ply',
+        cameras: 'realitymoli.csv'
+      });
 
-    viewer.load();
-  </script>
-</body>
+      viewer.load();
+    </script>
+  </body>
 </html>

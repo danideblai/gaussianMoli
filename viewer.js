@@ -1,15 +1,18 @@
 
-export class GaussianSplatViewer {
-  constructor({ container, plyUrl, cameraUrl }) {
+export class SplatViewer {
+  constructor({ container, model, cameras }) {
     this.container = container;
-    this.plyUrl = plyUrl;
-    this.cameraUrl = cameraUrl;
+    this.model = model;
+    this.cameras = cameras;
   }
 
   load() {
     const message = document.createElement('div');
-    message.innerText = 'Aquí iría el visor WebGL de Gaussian Splatting';
+    message.innerText = 'Cargando visor real... (aquí iría GLSplatViewer)';
     message.style = 'color: white; background: black; font-size: 2em; padding: 2em;';
     this.container.appendChild(message);
+
+    // Aquí deberías integrar el código real de GLSplatViewer
+    // Este es solo un placeholder temporal
   }
 }
